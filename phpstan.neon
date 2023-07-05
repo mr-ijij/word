@@ -1,0 +1,4 @@
+parameters:
+    excludePaths:
+        - %currentWorkingDirectory%/App/vendor/*
+        - %currentWorkingDirectory%/App/another_directory/*
