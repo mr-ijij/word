@@ -32,4 +32,17 @@ class WordList
     {
         return $this->monthNum;
     }
+
+    /**
+     * @return array[]
+     */
+    public function toArray(): array
+    {
+        $result = [];
+        foreach ($this->getAll() as $word) {
+            $result[] = $word->toArray();
+        }
+
+        return $result;
+    }
 }

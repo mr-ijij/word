@@ -21,4 +21,15 @@ class Word
     {
         return $this->japaneseWord;
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function toArray(): array
+    {
+        return [
+            'englishWord' => $this->getEnglishWord(),
+            'japaneseWord' => $this->getJapaneseWord(),
+        ];
+    }
 }

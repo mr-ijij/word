@@ -32,4 +32,17 @@ class WordAllList
 
         throw new DomainException('WordList not found.');
     }
+
+    /**
+     * @return array[]
+     */
+    public function toArray(): array
+    {
+        $result = [];
+        foreach ($this->getWordList() as $wordList) {
+            $result[$wordList->getMonthNum()] = $wordList->toArray();
+        }
+
+        return $result;
+    }
 }

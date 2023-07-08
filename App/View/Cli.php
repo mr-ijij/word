@@ -17,7 +17,7 @@ class Cli
     }
 
     public function __construct(
-        private GetWordListByMonth $GetWordListByMonth,
+        private GetWordListByMonth $GetWordListByMonth
     ) {
     }
 

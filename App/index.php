@@ -29,7 +29,6 @@ if (php_sapi_name() === 'cli') {
         $cliView->japaneseTest((int)$argv[2]);
     }
 } else {
-    // Webからの実行
-    $web = new Web();
+    $web = Web::create();
     $web->execute();
 }
