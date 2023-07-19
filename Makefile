@@ -5,3 +5,6 @@ phpcs:
 
 phpstan:
 	./App/vendor/bin/phpstan analyse ./App/ --level=8
+
+phpunit:
+	./App/vendor/bin/phpunit ./App/tests/

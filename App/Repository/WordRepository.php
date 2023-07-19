@@ -11,7 +11,7 @@ use LogicException;
 
 class WordRepository implements WordRepositoryInterface
 {
-    private string $csvFileDir = '';
+    private string $csvDirPath;
 
     public static function create(): self
     {
@@ -20,37 +20,40 @@ class WordRepository implements WordRepositoryInterface
 
     public function __construct()
     {
-        $this->csvFileDir = dirname(__DIR__) . '/../Data/2023/';
+        $this->csvDirPath = dirname(__DIR__) . '/../Data/';
     }
 
     public function findAll(): WordAllList
     {
-        $files = $this->getAllFilePath();
+        $directoryPathList = $this->getAllDirectoryPath();
 
         $wordAllList = [];
-        foreach ($files as $filePath) {
-            $fileName = '';
-            $wordList = [];
-            if (($handle = fopen($filePath, 'r')) !== false) {
-                while (($data = fgetcsv($handle, 10000, ',')) !== false) {
-                    if (count($data) !== 2) {
-                        continue;
+        foreach ($directoryPathList as $directoryPath) {
+            $files = $this->getAllFilePath($directoryPath);
+            foreach ($files as $filePath) {
+                $fileName = '';
+                $wordList = [];
+                if (($handle = fopen($filePath, 'r')) !== false) {
+                    while (($data = fgetcsv($handle, 10000, ',')) !== false) {
+                        if (count($data) !== 2) {
+                            continue;
+                        }
+                        $wordList[] = new Word($data[0], $data[1]);
                     }
-                    $wordList[] = new Word($data[0], $data[1]);
+
+                    $fileName = pathinfo($filePath, PATHINFO_FILENAME);
+
+                    fclose($handle);
+                } else {
+                    throw new LogicException("Unable to open CSV file: {$filePath}\n");
                 }
 
-                $fileName = pathinfo($filePath, PATHINFO_FILENAME);
+                if (empty($fileName)) {
+                    throw new LogicException("Unable to get file name: {$filePath}\n");
+                }
 
-                fclose($handle);
-            } else {
-                throw new LogicException("Unable to open CSV file: {$filePath}\n");
+                $wordAllList[] = new WordList((int)basename($directoryPath), (int)$fileName, $wordList);
             }
-
-            if (empty($fileName)) {
-                throw new LogicException("Unable to get file name: {$filePath}\n");
-            }
-
-            $wordAllList[] = new WordList((int)$fileName, $wordList);
         }
 
         return new WordAllList($wordAllList);
@@ -59,17 +62,30 @@ class WordRepository implements WordRepositoryInterface
     /**
      * @return string[]
      */
-    private function getAllFilePath(): array
+    private function getAllDirectoryPath(): array
     {
-        if (!is_dir($this->csvFileDir)) {
-            throw new LogicException(sprintf('CSV file directory not found: {%s}', $this->csvFileDir));
+        $directories = [];
+        foreach (array_filter(glob($this->csvDirPath . '*'), 'is_dir') as $directory)  {
+            $directories[] = $directory . '/';
+        }
+
+        return $directories;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getAllFilePath(string $directoryPath): array
+    {
+        if (!is_dir($directoryPath)) {
+            throw new LogicException(sprintf('CSV file directory not found: {%s}', $directoryPath));
         }
 
         $files = [];
-        if ($handle = opendir($this->csvFileDir)) {
+        if ($handle = opendir($directoryPath)) {
             while (($file = readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
-                    $files[] = $this->csvFileDir . $file;
+                    $files[] = $directoryPath . $file;
                 }
             }
             closedir($handle);

@@ -10,7 +10,8 @@ class WordList
      * @param Word[] $words
      */
     public function __construct(
-        private int $monthNum,
+        private int $year,
+        private int $month,
         private array $words = []
     ) {
     }
@@ -28,9 +29,14 @@ class WordList
         return $this->words;
     }
 
-    public function getMonthNum(): int
+    public function getYear(): int
     {
-        return $this->monthNum;
+        return $this->year;
+    }
+
+    public function getMonth(): int
+    {
+        return $this->month;
     }
 
     /**
@@ -40,7 +46,11 @@ class WordList
     {
         $result = [];
         foreach ($this->getAll() as $word) {
-            $result[] = $word->toArray();
+            $result[] = [
+                'year' => $this->year,
+                'month' => $this->month,
+                'word' => $word->toArray(),
+            ];
         }
 
         return $result;

@@ -17,15 +17,18 @@ class WordAllList
     /**
      * @return WordList[]
      */
-    public function getWordList(): array
+    public function getAll(): array
     {
         return $this->wordAllList;
     }
 
-    public function filterByMonth(int $monthNum): WordList
+    public function getWordList(int $year, int $month): WordList
     {
         foreach ($this->wordAllList as $wordList) {
-            if ($wordList->getMonthNum() === $monthNum) {
+            if (
+                $wordList->getYear() === $year &&
+                $wordList->getMonth() === $month
+            ) {
                 return $wordList;
             }
         }
@@ -39,8 +42,23 @@ class WordAllList
     public function toArray(): array
     {
         $result = [];
-        foreach ($this->getWordList() as $wordList) {
-            $result[$wordList->getMonthNum()] = $wordList->toArray();
+        foreach ($this->getAll() as $wordList) {
+            $result[] = $wordList->toArray();
+        }
+
+        return $result;
+    }
+
+    public function getHasYearAndMonth(): array
+    {
+        $result = [];
+        foreach ($this->getAll() as $wordList) {
+            $result[$wordList->getYear()][] = $wordList->getMonth();
+        }
+
+        foreach ($result as $year => $months) {
+            sort($months);
+            $result[$year] = $months;
         }
 
         return $result;

@@ -8,7 +8,7 @@ use App\Domain\WordAllList;
 use App\Repository\WordRepository;
 use App\Repository\WordRepositoryInterface;
 
-class GetWordListAll
+class GetExistWordList
 {
     public static function create(): self
     {
@@ -22,13 +22,13 @@ class GetWordListAll
     ) {
     }
 
-    public function execute(): WordAllList
+    public function execute(): array
     {
         $wordAllList = $this->wordRepository->findAll();
-        foreach ($wordAllList->getWordList() as $wordList) {
+        foreach ($wordAllList->getAll() as $wordList) {
             $wordList->shuffle();
         }
 
-        return $wordAllList;
+        return $wordAllList->getHasYearAndMonth();
     }
 }
